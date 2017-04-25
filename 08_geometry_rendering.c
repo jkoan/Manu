@@ -225,19 +225,10 @@ int main( int argc, char* args[] )
 												fflush(stdout);
                         break;
 										case SDLK_RETURN:
-												//String start_string="./";
-												/*start_string.append(alien_x);
-												start_string.append("/");
-												start_string.append(alien_y);
-												start_string.append("/start.sh");*/
-												/*char command[150];
-												strcpy( command, "./");
-												command += alien_x + "/" ;
-												command += alien_y+"/start.sh";*/
 
 												char rename[100];
 
-												snprintf ( rename, 100, "./%d/%d/start.sh", alien_x, alien_y );
+												snprintf ( rename, 100, "./run/%d/%d/start.sh", alien_x, alien_y );
 
 												if (system(rename)) {
 													printf("okay");
