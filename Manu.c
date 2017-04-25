@@ -11,13 +11,12 @@ and may not be redistributed without written permission.*/
 #include <iostream>
 
 //Screen dimension constants
-#define SCREEN_WIDTH 1000
-#define SCREEN_HEIGHT 480
-//#define SCREEN_HEIGHT 480
+int SCREEN_WIDTH=1000;
+int SCREEN_HEIGHT=480;
 
-#define HEAD_SIZE_HEIGHT 50
+int HEAD_SIZE_HEIGHT=50;
 
-#define HEAD_SIZE_WIDTH SCREEN_WIDTH
+int HEAD_SIZE_WIDTH=SCREEN_WIDTH;
 
 //Starts up SDL and creates window
 bool init();
@@ -63,7 +62,7 @@ bool init()
 		}
 
 		//Create window
-		gWindow = SDL_CreateWindow( "Manu", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
+		gWindow = SDL_CreateWindow( "Manu", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN|SDL_WINDOW_FULLSCREEN_DESKTOP );
 		if( gWindow == NULL )
 		{
 			printf( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
@@ -71,6 +70,17 @@ bool init()
 		}
 		else
 		{
+			SDL_DisplayMode current;
+			if (SDL_GetNumVideoDisplays() != 1) {
+				printf("Only work on 1 Display\n" );
+			}
+			int should_be_zero =SDL_GetCurrentDisplayMode(0, &current);
+			//current.w, current.h,
+			SCREEN_WIDTH=current.w;
+			SCREEN_HEIGHT=current.h;
+			HEAD_SIZE_WIDTH=current.w;
+			HEAD_SIZE_HEIGHT=current.h*0.05;
+
 			//Create renderer for window
 			gRenderer = SDL_CreateRenderer( gWindow, -1, SDL_RENDERER_ACCELERATED );
 			if( gRenderer == NULL )
@@ -82,7 +92,7 @@ bool init()
 			{
 				//Initialize renderer color
 				SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
-
+				SDL_ShowCursor(SDL_DISABLE);
 				//Initialize PNG loading
 				int imgFlags = IMG_INIT_PNG;
 				if( !( IMG_Init( imgFlags ) & imgFlags ) )
@@ -193,8 +203,6 @@ int main( int argc, char* args[] )
 														alien_y =2;
 													}
 												}
-												printf("x:%i y:%i\n", alien_x, alien_y);
-												fflush(stdout);
                         break;
                     case SDLK_RIGHT:
                         alien_x += 1;
@@ -205,37 +213,33 @@ int main( int argc, char* args[] )
 														alien_y = 0;
 													}
 												}
-												printf("x:%i y:%i\n", alien_x, alien_y);
-												fflush(stdout);
                         break;
                     case SDLK_UP:
                         alien_y -= 1;
 												if (alien_y < 0) {
 													alien_y = 2;
 												}
-												printf("x:%i y:%i\n", alien_x, alien_y);
-												fflush(stdout);
                         break;
                     case SDLK_DOWN:
                         alien_y += 1;
 												if (alien_y >= 3) {
 													alien_y = 0;
 												}
-												printf("x:%i y:%i\n", alien_x, alien_y);
-												fflush(stdout);
                         break;
 										case SDLK_RETURN:
-
+												SDL_DisplayMode mode;
+												printf("%d\n",mode.w );
 												char rename[100];
 
 												snprintf ( rename, 100, "./run/%d/%d/start.sh", alien_x, alien_y );
 
+
+												close();
 												if (system(rename)) {
-													printf("okay");
-												}else{
-													printf("noooo");
-													printf(rename);
+													printf("failed\n");
+													exit(1);
 												}
+												init();
 												break;
 										case SDLK_q:
 												quit = 1;
